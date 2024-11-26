@@ -2,14 +2,13 @@
 
 namespace TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Releations;
 
-use Filament\Facades\Filament;
 use TomatoPHP\FilamentAccounts\Facades\FilamentAccounts;
 
 class AccountReleations
 {
     public static function get(): array
     {
-        $loadRelations = FilamentAccounts::make()->loadRelations();
+        $loadRelations = FilamentAccounts::loadRelations();
 
         $relations = [];
 

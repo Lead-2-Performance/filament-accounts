@@ -58,7 +58,7 @@ class AccountsTableActions extends ActionsBuilder
         ]);
 
         //Merge Provider Actions
-        $actions = $actions->merge(FilamentAccounts::make()->loadActions());
+        $actions = $actions->merge(FilamentAccounts::loadActions());
 
         return $actions->toArray();
     }
