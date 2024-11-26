@@ -126,11 +126,13 @@ class AccountRequest extends Page implements HasTable, HasForms
 
     public function getRequestForm($record = null): array
     {
+
+        $type = config('filament-types.model') ?? \TomatoPHP\FilamentTypes\Models\Type::class;
         $form = [
             Forms\Components\Select::make('type')
                 ->disabled(fn($record) => $record)
                 ->label(trans('filament-accounts::messages.requests.columns.type'))
-                ->options(Type::query()->where('for', 'account-requests')->where('type', 'types')->pluck('name', 'key')->toArray())
+                ->options($type::query()->where('for', 'account-requests')->where('type', 'types')->pluck('name', 'key')->toArray())
                 ->searchable()
                 ->required()
                 ->live()
