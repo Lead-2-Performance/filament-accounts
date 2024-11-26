@@ -12,7 +12,6 @@ class RequestsStatus extends BaseTypePage
         return trans('filament-accounts::messages.account-requests.status');
     }
 
-
     public function getType(): string
     {
         return "status";

@@ -7,11 +7,9 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AccountLocationsManager extends RelationManager
 {
@@ -60,7 +58,7 @@ class AccountLocationsManager extends RelationManager
                     ->live(),
                 Select::make('city_id')
                     ->label(trans('filament-locations::messages.location.form.city_id'))
-                    ->options(function (Get $get){
+                    ->options(function (Get $get) {
                         return \TomatoPHP\FilamentLocations\Models\City::where('country_id', $get('country_id'))
                             ->get()
                             ->pluck('name', 'id')
@@ -70,7 +68,7 @@ class AccountLocationsManager extends RelationManager
                     ->live(),
                 Select::make('area_id')
                     ->label(trans('filament-locations::messages.location.form.area_id'))
-                    ->options(function (Get $get){
+                    ->options(function (Get $get) {
                         return \TomatoPHP\FilamentLocations\Models\Area::where('city_id', $get('city_id'))
                             ->get()
                             ->pluck('name', 'id')
@@ -150,9 +148,7 @@ class AccountLocationsManager extends RelationManager
                 Tables\Actions\CreateAction::make()
                     ->label(trans('filament-accounts::messages.locations.create'))
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),

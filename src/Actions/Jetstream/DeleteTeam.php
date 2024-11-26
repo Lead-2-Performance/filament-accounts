@@ -2,16 +2,15 @@
 
 namespace TomatoPHP\FilamentAccounts\Actions\Jetstream;
 
-
+use Illuminate\Database\Eloquent\Model;
 use Laravel\Jetstream\Contracts\DeletesTeams;
-use TomatoPHP\FilamentAccounts\Models\Team;
 
 class DeleteTeam implements DeletesTeams
 {
     /**
      * Delete the given team.
      */
-    public function delete(Team $team): void
+    public function delete(Model $team): void
     {
         $team->purge();
     }

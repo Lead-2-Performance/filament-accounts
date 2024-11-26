@@ -5,7 +5,6 @@ namespace TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Forms;
 use Filament\Forms\Form;
 use Filament\Forms;
 use TomatoPHP\FilamentHelpers\Contracts\FormBuilder;
-use TomatoPHP\FilamentTypes\Models\Type;
 
 class AccountsForm extends FormBuilder
 {
@@ -13,7 +12,7 @@ class AccountsForm extends FormBuilder
     {
         $components = collect([]);
 
-        if(filament('filament-accounts')->useAvatar) {
+        if (filament('filament-accounts')->useAvatar) {
             $components->push(
                 Forms\Components\SpatieMediaLibraryFileUpload::make('avatar')
                     ->alignCenter()
@@ -43,24 +42,25 @@ class AccountsForm extends FormBuilder
                 ->maxLength(255)
         );
 
-        if(filament('filament-accounts')->showAddressField) {
+        if (filament('filament-accounts')->showAddressField) {
             $components->push(
                 Forms\Components\Textarea::make('address')
                     ->label(trans('filament-accounts::messages.accounts.coulmns.address'))
                     ->columnSpanFull()
             );
         }
-        if(filament('filament-accounts')->useTypes) {
+        if (filament('filament-accounts')->useTypes) {
+            $type = config('filament-types.model') ?? \TomatoPHP\FilamentTypes\Models\Type::class;
+
             $components->push(
                 Forms\Components\Select::make('type')
                     ->label(trans('filament-accounts::messages.accounts.coulmns.type'))
                     ->searchable()
                     ->required()
-                    ->options(Type::query()->where('for', 'accounts')->where('type', 'type')->pluck('name', 'key')->toArray())
+                    ->options($type::query()->where('for', 'accounts')->where('type', 'type')->pluck('name', 'key')->toArray())
                     ->default('account')
             );
-        }
-        else if(filament('filament-accounts')->showTypeField) {
+        } else if (filament('filament-accounts')->showTypeField) {
             $components->push(
                 Forms\Components\TextInput::make('type')
                     ->label(trans('filament-accounts::messages.accounts.coulmns.type'))
@@ -68,7 +68,7 @@ class AccountsForm extends FormBuilder
                     ->default('account')
             );
         }
-        if(filament('filament-accounts')->useLoginBy) {
+        if (filament('filament-accounts')->useLoginBy) {
             $components->push(
                 Forms\Components\Select::make('loginBy')
                     ->label(trans('filament-accounts::messages.accounts.coulmns.loginBy'))
@@ -81,7 +81,7 @@ class AccountsForm extends FormBuilder
                     ->default('email')
             );
         }
-        if(filament('filament-accounts')->canBlocked) {
+        if (filament('filament-accounts')->canBlocked) {
             $components->push(
                 Forms\Components\Toggle::make('is_active')
                     ->columnSpan(2)
@@ -90,7 +90,7 @@ class AccountsForm extends FormBuilder
                     ->required()
             );
         }
-        if(filament('filament-accounts')->canLogin) {
+        if (filament('filament-accounts')->canLogin) {
             $components = $components->merge([
                 Forms\Components\Toggle::make('is_login')->default(false)
                     ->columnSpan(2)

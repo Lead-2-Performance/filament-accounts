@@ -1,12 +1,11 @@
 <?php
 
-namespace TomatoPHP\FilamentAccounts\Actions\Jetstream;
+namespace TomatoPHP\FilamentModels\Actions\Jetstream;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
-use Laravel\Jetstream\Contracts\UpdatesTeamNames;
-use TomatoPHP\FilamentAccounts\Models\Account;
-use TomatoPHP\FilamentAccounts\Models\Team;
+
 
 class UpdateTeamName implements UpdatesTeamNames
 {
@@ -15,7 +14,7 @@ class UpdateTeamName implements UpdatesTeamNames
      *
      * @param  array<string, string>  $input
      */
-    public function update(Account $user, Team $team, array $input): void
+    public function update(Model $user, Model $team, array $input): void
     {
         Gate::forUser($user)->authorize('update', $team);
 

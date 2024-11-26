@@ -2,7 +2,9 @@
 
 namespace TomatoPHP\FilamentAccounts\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
 /**
  * @property integer $id
@@ -14,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $is_approved_at
  * @property string $created_at
  * @property string $updated_at
- * @property AccountRequestMeta[] $accountRequestMetas
+ * @property AccountRequestMeta[] $accountRequestMeta
  * @property Account $account
  * @property User $user
  */
@@ -31,9 +33,9 @@ class AccountRequest extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function accountRequestMetas()
+    public function accountRequestMeta()
     {
-        return $this->hasMany('TomatoPHP\FilamentAccounts\Models\AccountRequestMeta');
+        return $this->hasMany(Helpers::loadAccountRequestModelClass());
     }
 
     /**
@@ -41,7 +43,7 @@ class AccountRequest extends Model
      */
     public function account()
     {
-        return $this->belongsTo(config('filament-accounts.model'));
+        return $this->belongsTo(Helpers::loadAccountModelClass());
     }
 
     /**
@@ -49,7 +51,7 @@ class AccountRequest extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\Models\User');
+        return $this->belongsTo(User::class);
     }
 
 
@@ -58,18 +60,16 @@ class AccountRequest extends Model
      * @param string|null $value
      * @return Model|string
      */
-    public function meta(string $key, mixed $value=null): mixed
+    public function meta(string $key, mixed $value = null): mixed
     {
-        if($value!==null){
-            return $this->accountRequestMetas()->updateOrCreate(['key' => $key], ['value' => $value]);
-        }
-        else {
-            $value = $this->accountRequestMetas()->where('key', $key)->first()?->value;
-            if($value === 'image'){
-                return $this->accountRequestMetas()->where('key', $key)->first()?->getMedia('image')->first()?->getUrl();
-            }
-            else {
-                return $this->accountRequestMetas()->where('key', $key)->first()?->value;
+        if ($value !== null) {
+            return $this->accountRequestMeta()->updateOrCreate(['key' => $key], ['value' => $value]);
+        } else {
+            $value = $this->accountRequestMeta()->where('key', $key)->first()?->value;
+            if ($value === 'image') {
+                return $this->accountRequestMeta()->where('key', $key)->first()?->getMedia('image')->first()?->getUrl();
+            } else {
+                return $this->accountRequestMeta()->where('key', $key)->first()?->value;
             }
         }
     }

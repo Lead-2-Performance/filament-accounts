@@ -4,16 +4,11 @@ namespace TomatoPHP\FilamentAccounts\Filament\Pages\Auth;
 
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use Filament\Events\Auth\Registered;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Http\Responses\Auth\Contracts\RegistrationResponse;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\Register;
-use Filament\Pages\Tenancy\EditTenantProfile;
 use Illuminate\Support\Facades\DB;
 use TomatoPHP\FilamentAccounts\Events\SendOTP;
 use TomatoPHP\FilamentAccounts\Responses\RegisterResponse;
@@ -22,7 +17,6 @@ class RegisterAccount extends Register
 {
 
     protected static ?int $navigationSort = 2;
-
 
     /**
      * @return bool

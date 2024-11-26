@@ -4,10 +4,7 @@ namespace TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Tables;
 
 use Filament\Tables\Table;
 use Filament\Tables;
-use Filament\Forms;
-use Maatwebsite\Excel\Facades\Excel;
 use TomatoPHP\FilamentAccounts\Components\AccountColumn;
-use TomatoPHP\FilamentAccounts\Export\ExportAccounts;
 use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Actions\AccountsTableActions;
 use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Actions\ExportAccountsAction;
 use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Actions\ImportAccountsAction;
@@ -22,7 +19,7 @@ class AccountsTable extends TableBuilder
         $colums = collect([]);
 
         //Use Avatar
-        if(filament('filament-accounts')->useAvatar) {
+        if (filament('filament-accounts')->useAvatar) {
             $colums->push(
                 AccountColumn::make('id')
                     ->label(trans('filament-accounts::messages.accounts.coulmns.id')),
@@ -32,8 +29,7 @@ class AccountsTable extends TableBuilder
                     ->sortable()
                     ->searchable()
             );
-        }
-        else {
+        } else {
             $colums->push(
                 Tables\Columns\TextColumn::make('name')
                     ->label(trans('filament-accounts::messages.accounts.coulmns.name'))
@@ -44,7 +40,7 @@ class AccountsTable extends TableBuilder
         }
 
         //Use Type Column
-        if(filament('filament-accounts')->useTypes){
+        if (filament('filament-accounts')->useTypes) {
             $colums->push(
                 TypeColumn::make('type')
                     ->label(trans('filament-accounts::messages.accounts.coulmns.type'))
@@ -52,8 +48,7 @@ class AccountsTable extends TableBuilder
                     ->sortable()
                     ->searchable()
             );
-        }
-        else if(filament('filament-accounts')->showTypeField){
+        } else if (filament('filament-accounts')->showTypeField) {
             $colums->push(
                 Tables\Columns\TextColumn::make('type')
                     ->label(trans('filament-accounts::messages.accounts.coulmns.type'))
@@ -64,7 +59,7 @@ class AccountsTable extends TableBuilder
         }
 
         //Use Teams
-        if(filament('filament-accounts')->useTeams){
+        if (filament('filament-accounts')->useTeams) {
             $colums->push(
                 Tables\Columns\TextColumn::make('teams.name')
                     ->badge()
@@ -90,7 +85,7 @@ class AccountsTable extends TableBuilder
         ]);
 
         //Can Login
-        if(filament('filament-accounts')->canLogin){
+        if (filament('filament-accounts')->canLogin) {
             $colums->push(
                 Tables\Columns\IconColumn::make('is_login')
                     ->label(trans('filament-accounts::messages.accounts.coulmns.is_login'))
@@ -101,7 +96,7 @@ class AccountsTable extends TableBuilder
         }
 
         //Can Blocked
-        if(filament('filament-accounts')->canBlocked) {
+        if (filament('filament-accounts')->canBlocked) {
             $colums->push(
                 Tables\Columns\IconColumn::make('is_active')
                     ->label(trans('filament-accounts::messages.accounts.coulmns.is_active'))
@@ -131,10 +126,10 @@ class AccountsTable extends TableBuilder
         ]);
 
         $actions = collect([]);
-        if(filament('filament-accounts')->useExport){
+        if (filament('filament-accounts')->useExport) {
             $actions->push(ExportAccountsAction::make());
         }
-        if(filament('filament-accounts')->useImport){
+        if (filament('filament-accounts')->useImport) {
             $actions->push(ImportAccountsAction::make());
         }
         return $table

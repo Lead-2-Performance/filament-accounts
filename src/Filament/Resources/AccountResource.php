@@ -2,27 +2,14 @@
 
 namespace TomatoPHP\FilamentAccounts\Filament\Resources;
 
-use Filament\Notifications\Notification;
-use TomatoPHP\FilamentAccounts\Facades\FilamentAccounts;
 use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Forms\AccountsForm;
-use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Pages;
-use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\RelationManagers;
-use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Releations\AccountReleations;
 use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Tables\AccountsTable;
-use TomatoPHP\FilamentAccounts\Models\Account;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use TomatoPHP\FilamentAlerts\Models\NotificationsTemplate;
-use TomatoPHP\FilamentAlerts\Services\SendNotification;
-use TomatoPHP\FilamentIcons\Components\IconPicker;
-use TomatoPHP\FilamentTypes\Components\TypeColumn;
-use TomatoPHP\FilamentTypes\Models\Type;
-use function Laravel\Prompts\confirm;
+use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Relations\AccountRelations;
 
 class AccountResource extends Resource
 {
@@ -72,7 +59,7 @@ class AccountResource extends Resource
 
     public static function getRelations(): array
     {
-        return config('filament-accounts.relations') ? config('filament-accounts.relations')::get() :  AccountReleations::get();
+        return config('filament-accounts.relations') ? config('filament-accounts.relations')::get() :  AccountRelations::get();
     }
 
     public static function getPages(): array

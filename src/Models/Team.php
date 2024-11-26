@@ -9,14 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Laravel\Jetstream\Events\TeamCreated;
 use Laravel\Jetstream\Events\TeamDeleted;
 use Laravel\Jetstream\Events\TeamUpdated;
-use Laravel\Jetstream\Team as JetstreamTeam;
-use Modules\Deals\Models\Deal;
-use Modules\Leads\Models\Lead;
-use Modules\Projects\Models\Project;
+use Laravel\Jetstream\Team as JetStreamTeam;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
-class Team extends JetstreamTeam implements HasMedia, HasAvatar
+class Team extends JetStreamTeam implements HasMedia, HasAvatar
 {
     use HasFactory;
     use InteractsWithMedia;
@@ -67,10 +65,10 @@ class Team extends JetstreamTeam implements HasMedia, HasAvatar
 
     public function getAvatarAttribute(): string
     {
-        $address = strtolower( trim( $this->name ) );
+        $address = strtolower(trim($this->name));
 
         // Create an SHA256 hash of the final string
-        $hash = hash( 'sha256', $address );
+        $hash = hash('sha256', $address);
 
         return $this->getFirstMediaUrl('avatar') ?: 'https://www.gravatar.com/avatar/' . $hash . '?d=retro';
     }
@@ -80,11 +78,11 @@ class Team extends JetstreamTeam implements HasMedia, HasAvatar
      */
     public function owner(): BelongsTo
     {
-        return $this->belongsTo(Account::class, 'account_id');
+        return $this->belongsTo(Helpers::loadAccountModelClass(), 'account_id');
     }
 
     public function accounts(): BelongsToMany
     {
-        return $this->belongsToMany(Account::class, 'team_user', 'team_id', 'account_id');
+        return $this->belongsToMany(Helpers::loadAccountModelClass(), 'team_user', 'team_id', 'account_id');
     }
 }

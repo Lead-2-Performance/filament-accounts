@@ -67,7 +67,7 @@ return [
         ]
     ],
     "meta" => [
-        "label" => "Metas",
+        "label" => "Meta",
         "single" => "Meta",
         "create" => "Create Meta",
         "columns" => [
@@ -134,7 +134,7 @@ return [
             "browser_sessions_logout_notification" => "Your browser sessions have been logged out.",
             "browser_sessions_logout_failed_notification" => "Your password was incorrect.",
             "sessions_device" => "Device",
-            "sessions_content"=> "Connected Devices",
+            "sessions_content" => "Connected Devices",
             "incorrect_password" => "The password you entered was incorrect.",
         ],
         "delete" => [
@@ -197,7 +197,7 @@ return [
         "members" => [
             "title" => "Invite Team Members",
             "description" => "Add a new team member to your team, allowing them to collaborate with you.",
-            "team-members"=> "Please provide the email address of the person you would like to add to this team.",
+            "team-members" => "Please provide the email address of the person you would like to add to this team.",
             "email" => "Email",
             "role" => "Role",
             "send_invitation" => "Send Invitation",
@@ -249,7 +249,7 @@ return [
             "name" => "Administrator",
             "description" => "Administrator users can perform any action."
         ],
-        "user" =>[
+        "user" => [
             "name" =>  "User",
             "description" => "User users can read and update data."
         ],

@@ -2,7 +2,6 @@
 
 namespace TomatoPHP\FilamentAccounts\Filament\Pages;
 
-use Filament\Actions\CreateAction;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
@@ -11,8 +10,8 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Filament\Forms;
 use Filament\Tables;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 use TomatoPHP\FilamentTypes\Components\TypeColumn;
-use TomatoPHP\FilamentTypes\Models\Type;
 
 class AccountRequest extends Page implements HasTable, HasForms
 {
@@ -40,16 +39,15 @@ class AccountRequest extends Page implements HasTable, HasForms
     {
         $columns = [];
 
-        if(filament('filament-saas-accounts')->useTypes){
-            $columns[] =TypeColumn::make('type')
+        if (filament('filament-saas-accounts')->useTypes) {
+            $columns[] = TypeColumn::make('type')
                 ->label(trans('filament-accounts::messages.requests.columns.type'))
                 ->searchable();
             $columns[] = TypeColumn::make('status')
                 ->label(trans('filament-accounts::messages.requests.columns.status'))
                 ->searchable();
-        }
-        else {
-            $columns[] =Tables\Columns\TextColumn::make('type')
+        } else {
+            $columns[] = Tables\Columns\TextColumn::make('type')
                 ->label(trans('filament-accounts::messages.requests.columns.type'))
                 ->searchable();
             $columns[] = Tables\Columns\TextColumn::make('status')
@@ -77,18 +75,18 @@ class AccountRequest extends Page implements HasTable, HasForms
         ]);
 
         return $table
-            ->query(\TomatoPHP\FilamentAccounts\Models\AccountRequest::query()->where('account_id', auth('accounts')->user()->id))
+            ->query(Helpers::loadAccountRequestModelClass()::query()->where('account_id', auth('accounts')->user()->id))
             ->headerActions([
                 Tables\Actions\Action::make('create')
                     ->form($this->getRequestForm())
-                    ->action(function(array $data){
+                    ->action(function (array $data) {
                         $type = auth('accounts')->user()->requests()->create([
-                           'type' => $data['type']
+                            'type' => $data['type']
                         ]);
 
 
-                        foreach ($data as $key=>$item){
-                            if($key !== 'type'){
+                        foreach ($data as $key => $item) {
+                            if ($key !== 'type') {
                                 $type->meta($key, $item);
                             }
                         }
@@ -96,24 +94,22 @@ class AccountRequest extends Page implements HasTable, HasForms
 
             ])
             ->columns($columns)
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\Action::make('edit')
                     ->icon('heroicon-s-pencil-square')
-                    ->fillForm(function ($record){
-                        $metaItems = $record->accountRequestMetas->pluck('value', 'key')->toArray();
+                    ->fillForm(function ($record) {
+                        $metaItems = $record->accountRequestMeta->pluck('value', 'key')->toArray();
                         return array_merge([
                             "type" => $record->type
                         ], $metaItems);
                     })
                     ->form(fn($record) => $this->getRequestForm($record))
-                    ->action(function(array $data, $record){
+                    ->action(function (array $data, $record) {
                         $record->update($data);
 
-                        foreach ($data as $key=>$item){
-                            if($key !== 'type'){
+                        foreach ($data as $key => $item) {
+                            if ($key !== 'type') {
                                 $record->meta($key, $item);
                             }
                         }
@@ -128,7 +124,7 @@ class AccountRequest extends Page implements HasTable, HasForms
             ]);
     }
 
-    public function getRequestForm($record=null): array
+    public function getRequestForm($record = null): array
     {
         $form = [
             Forms\Components\Select::make('type')
@@ -141,17 +137,17 @@ class AccountRequest extends Page implements HasTable, HasForms
                 ->preload(),
         ];
 
-        foreach (filament('filament-saas-accounts')->requestsForm as $formItems){
-            foreach ($formItems->schema as $item){
+        foreach (filament('filament-saas-accounts')->requestsForm as $formItems) {
+            foreach ($formItems->schema as $item) {
                 $item->hidden(fn(Forms\Get $get) => $get('type') !== $formItems->type);
-                if($record){
-                    $approved = $record->accountRequestMetas()->where('key', $item->getName())->first()?->is_approved;
-                    $rejected = $record->accountRequestMetas()->where('key', $item->getName())->first();
+                if ($record) {
+                    $approved = $record->accountRequestMeta()->where('key', $item->getName())->first()?->is_approved;
+                    $rejected = $record->accountRequestMeta()->where('key', $item->getName())->first();
 
                     $item->disabled($approved ? true : false);
-                    $item->hint( $approved ? 'Approved' : ($rejected ? $rejected->rejected_reason :'Under Review'));
-                    $item->hintColor($approved ? 'success' : ($rejected ? 'danger' :'warning'));
-                    $item->hintIcon($approved ? 'heroicon-s-check-circle' : ($rejected ? 'heroicon-s-x-circle' :'heroicon-s-clock'));
+                    $item->hint($approved ? 'Approved' : ($rejected ? $rejected->rejected_reason : 'Under Review'));
+                    $item->hintColor($approved ? 'success' : ($rejected ? 'danger' : 'warning'));
+                    $item->hintIcon($approved ? 'heroicon-s-check-circle' : ($rejected ? 'heroicon-s-x-circle' : 'heroicon-s-clock'));
                 }
                 $form[] = $item;
             }

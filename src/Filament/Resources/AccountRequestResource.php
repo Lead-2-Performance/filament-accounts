@@ -5,26 +5,25 @@ namespace TomatoPHP\FilamentAccounts\Filament\Resources;
 use TomatoPHP\FilamentAccounts\Components\AccountColumn;
 use TomatoPHP\FilamentAccounts\Filament\Resources\AccountRequestResource\Pages;
 use TomatoPHP\FilamentAccounts\Filament\Resources\AccountRequestResource\RelationManagers;
-use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Pages\EditAccount;
-use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\RelationManagers\AccountRequestMetaManager;
-use TomatoPHP\FilamentAccounts\Models\AccountRequest;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 use TomatoPHP\FilamentTypes\Components\TypeColumn;
-use TomatoPHP\FilamentTypes\Models\Type;
 
 class AccountRequestResource extends Resource
 {
-    protected static ?string $model = AccountRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-cursor-arrow-ripple';
 
     protected static ?int $navigationSort = 2;
+
+    public static function getModel(): string
+    {
+        return Helpers::loadAccountRequestModelClass();
+    }
 
     public static function getNavigationGroup(): ?string
     {
@@ -43,21 +42,21 @@ class AccountRequestResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $payload = [];
+        $model = config('filament-types.model') ?? \TomatoPHP\FilamentTypes\Models\Type::class;
+
         $columns = [];
-        if(filament('filament-accounts')->useTypes){
+        if (filament('filament-accounts')->useTypes) {
             $columns[] = Forms\Components\Select::make('type')
                 ->label(trans('filament-accounts::messages.requests.columns.type'))
                 ->searchable()
-                ->options(Type::where('for', 'account-requests')->where('type', 'types')->get()->pluck('name', 'key')->toArray());
+                ->options($model::where('for', 'account-requests')->where('type', 'types')->get()->pluck('name', 'key')->toArray());
 
             $columns[] = Forms\Components\Select::make('status')
                 ->label(trans('filament-accounts::messages.requests.columns.status'))
                 ->searchable()
-                ->options(Type::where('for', 'account-requests')->where('type', 'status')->get()->pluck('name', 'key')->toArray())
+                ->options($model::where('for', 'account-requests')->where('type', 'status')->get()->pluck('name', 'key')->toArray())
                 ->default('pending');
-        }
-        else {
+        } else {
             $columns[] = Forms\Components\TextInput::make('type')
                 ->label(trans('filament-accounts::messages.requests.columns.type'))
                 ->default('contact');
@@ -76,12 +75,11 @@ class AccountRequestResource extends Resource
     {
         $columns = [];
 
-        if(filament('filament-accounts')->useAvatar){
+        if (filament('filament-accounts')->useAvatar) {
             $columns[] = AccountColumn::make('account.id')
                 ->label(trans('filament-accounts::messages.requests.columns.account'))
                 ->sortable();
-        }
-        else {
+        } else {
             $columns[] = Tables\Columns\TextColumn::make('account.name');
         }
 
@@ -89,16 +87,15 @@ class AccountRequestResource extends Resource
             ->label(trans('filament-accounts::messages.requests.columns.user'))
             ->sortable();
 
-        if(filament('filament-accounts')->useTypes){
-            $columns[] =TypeColumn::make('type')
+        if (filament('filament-accounts')->useTypes) {
+            $columns[] = TypeColumn::make('type')
                 ->label(trans('filament-accounts::messages.requests.columns.type'))
                 ->searchable();
             $columns[] = TypeColumn::make('status')
-                    ->label(trans('filament-accounts::messages.requests.columns.status'))
-                    ->searchable();
-        }
-        else {
-            $columns[] =Tables\Columns\TextColumn::make('type')
+                ->label(trans('filament-accounts::messages.requests.columns.status'))
+                ->searchable();
+        } else {
+            $columns[] = Tables\Columns\TextColumn::make('type')
                 ->label(trans('filament-accounts::messages.requests.columns.type'))
                 ->searchable();
             $columns[] = Tables\Columns\TextColumn::make('status')

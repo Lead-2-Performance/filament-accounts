@@ -5,16 +5,13 @@ namespace TomatoPHP\FilamentAccounts\Http\Controllers\APIs;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Js;
 use TomatoPHP\FilamentAccounts\Events\AccountLogged;
 use TomatoPHP\FilamentAccounts\Events\AccountOTPCheck;
 use TomatoPHP\FilamentAccounts\Events\SendOTP;
 use TomatoPHP\FilamentAccounts\Events\AccountRegistered;
-use TomatoPHP\FilamentAccounts\Facades\FilamentAccountsAuth;
 use TomatoPHP\FilamentAccounts\Facades\FilamentAccounts;
-use TomatoPHP\FilamentAccounts\Models\Account;
 use App\Http\Controllers\Controller;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
 /**
  *
@@ -25,7 +22,7 @@ class AuthController extends Controller
 
     public bool $otp = true;
 
-    public string $model = Account::class;
+    public string $model;
 
     public string $loginBy = 'email';
 
@@ -40,7 +37,7 @@ class AuthController extends Controller
     {
         $this->guard = config('filament-accounts.guard');
         $this->otp = config('filament-accounts.required_otp');
-        $this->model = config('filament-accounts.model');
+        $this->model = Helpers::loadAccountModelClass();
         $this->loginBy = config('filament-accounts.login_by');
         $this->loginType = config('filament-accounts.login_by');
         $this->resource = config('filament-accounts.resource', null);
@@ -68,9 +65,9 @@ class AuthController extends Controller
             "password" => $request->get('password')
         ]);
 
-        if($check){
+        if ($check) {
             $user = auth($this->guard)->user();
-            if($user->is_active && $this->otp){
+            if ($user->is_active && $this->otp) {
                 $user->last_login = Carbon::now();
                 $user->save();
 
@@ -79,10 +76,9 @@ class AuthController extends Controller
 
                 AccountLogged::dispatch($this->model, $user->id);
 
-                if($this->resource){
+                if ($this->resource) {
                     $user = $this->resource::make($user);
-                }
-                else {
+                } else {
                     $user = [
                         "token" => $user->token
                     ];
@@ -96,12 +92,11 @@ class AuthController extends Controller
                  * @body array{status: true, message: "Data Retrieved Successfully", data: array{token: string}}
                  */
                 return response()->json([
-                    'message'=> __("Data Retrieved Successfully"),
+                    'message' => __("Data Retrieved Successfully"),
                     'data' => $user,
                     'status' => true
                 ], 200);
-            }
-            else if(!$user->is_active && $this->otp){
+            } else if (!$user->is_active && $this->otp) {
                 /**
                  * A user resource.
                  *
@@ -111,9 +106,8 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => false,
                     'message' => __("Your account is not active yet")
-                ],401);
-            }
-            else if(!$this->otp) {
+                ], 401);
+            } else if (!$this->otp) {
                 $user->last_login = Carbon::now();
                 $user->save();
 
@@ -122,10 +116,9 @@ class AuthController extends Controller
 
                 AccountLogged::dispatch($this->model, $user->id);
 
-                if($this->resource){
+                if ($this->resource) {
                     $user = $this->resource::make($user);
-                }
-                else {
+                } else {
                     $user = [
                         "token" => $user->token
                     ];
@@ -138,7 +131,7 @@ class AuthController extends Controller
                  * @body array{status: false, message: "Data Retrieved Successfully", data: array{token: string}}
                  */
                 return response()->json([
-                    'message'=> __("Data Retrieved Successfully"),
+                    'message' => __("Data Retrieved Successfully"),
                     'data' => $user,
                     'status' => true
                 ], 200);
@@ -154,8 +147,7 @@ class AuthController extends Controller
         return response()->json([
             'status' => false,
             'message' => __("Username Or Password Is Not Correct")
-        ],400);
-
+        ], 400);
     }
 
     /**
@@ -180,10 +172,9 @@ class AuthController extends Controller
 
         $data = $request->all();
 
-        if($this->loginBy === 'phone'){
+        if ($this->loginBy === 'phone') {
             $data['username'] = $request->get('phone');
-        }
-        elseif($this->loginBy === 'email'){
+        } elseif ($this->loginBy === 'email') {
             $data['username'] = $request->get('email');
         }
 
@@ -194,18 +185,17 @@ class AuthController extends Controller
         if ($user) {
             //Set More Data to Meta
             foreach (FilamentAccounts::getAttachedItems() as $key => $value) {
-                if($value === 'media'){
-                    if($request->hasFile($key)){
+                if ($value === 'media') {
+                    if ($request->hasFile($key)) {
                         $user->addMedia($request->{$key})
                             ->preservingOriginal()
                             ->toMediaCollection($key);
                     }
-                }
-                else {
+                } else {
                     $user->meta($key, $request->get($key));
                 }
             }
-            if($this->otp){
+            if ($this->otp) {
                 $user->otp_code = substr(number_format(time() * rand(), 0, '', ''), 0, 6);
                 $user->save();
 
@@ -220,7 +210,7 @@ class AuthController extends Controller
                  */
                 return response()->json([
                     "status" => true,
-                    "message" => 'An OTP Has been send to your '.$this->loginType . ' please check it',
+                    "message" => 'An OTP Has been send to your ' . $this->loginType . ' please check it',
                 ]);
             }
 
@@ -228,10 +218,9 @@ class AuthController extends Controller
             $user->token = $token;
 
             AccountRegistered::dispatch($this->model, $user->id);
-            if($this->resource){
+            if ($this->resource) {
                 $user = $this->resource::make($user);
-            }
-            else {
+            } else {
                 $user = [
                     "token" => $user->token
                 ];
@@ -274,7 +263,7 @@ class AuthController extends Controller
     public function resend(Request $request): JsonResponse
     {
         $request->validate([
-            config('filament-accounts.login_by') => "required|exists:".app(config('filament-accounts.model'))->getTable().",username",
+            config('filament-accounts.login_by') => "required|exists:" . app(config('filament-accounts.model'))->getTable() . ",username",
         ]);
 
         $checkIfEx = config('filament-accounts.model')::where("username", $request->get(config('filament-accounts.login_by')))->first();
@@ -292,7 +281,7 @@ class AuthController extends Controller
          */
         return response()->json([
             "status" => true,
-            "message" => 'An OTP Has been send to your '.$this->loginType . ' please check it'
+            "message" => 'An OTP Has been send to your ' . $this->loginType . ' please check it'
         ], 200);
     }
 
@@ -305,7 +294,8 @@ class AuthController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function otpCheck(Request $request){
+    public function otpCheck(Request $request)
+    {
         $request->validate([
             config('filament-accounts.login_by') => 'required|string|max:255',
             'otp_code' => 'required|string|max:6',
@@ -325,7 +315,6 @@ class AuthController extends Controller
                     "status" => true,
                     "message" => __('valid OTP Code'),
                 ], 200);
-
             }
 
             /**
@@ -362,7 +351,8 @@ class AuthController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function otp(Request $request){
+    public function otp(Request $request)
+    {
         $request->validate([
             config('filament-accounts.login_by') => 'required|string|max:255',
             'otp_code' => 'required|string|max:6',
@@ -389,7 +379,6 @@ class AuthController extends Controller
                     "status" => true,
                     "message" => __('your Account has been activated'),
                 ], 200);
-
             }
 
             /**
@@ -428,7 +417,7 @@ class AuthController extends Controller
     public function reset(Request $request): JsonResponse
     {
         $request->validate([
-            config('filament-accounts.login_by') => "required|exists:".app(config('filament-accounts.model'))->getTable().",username",
+            config('filament-accounts.login_by') => "required|exists:" . app(config('filament-accounts.model'))->getTable() . ",username",
         ]);
 
         $checkIfActive = config('filament-accounts.model')::where("username", $request->get(config('filament-accounts.login_by')))->first();
@@ -445,7 +434,7 @@ class AuthController extends Controller
              */
             return response()->json([
                 "status" => true,
-                "message" => 'An OTP Has been send to your '.$this->loginType . ' please check it'
+                "message" => 'An OTP Has been send to your ' . $this->loginType . ' please check it'
             ], 200);
         }
 
@@ -473,7 +462,7 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
-        if($user){
+        if ($user) {
             $request->validate([
                 'password' => "required|confirmed|min:6|max:191",
             ]);
@@ -487,15 +476,14 @@ class AuthController extends Controller
               *  @body array{status: true, message: "Password Updated"}
               */
             return response()->json([
-                "status"=> true,
-                "message"=> __("Password Updated")
+                "status" => true,
+                "message" => __("Password Updated")
             ], 200);
-        }
-        else {
+        } else {
             $request->validate([
                 'password' => "required|confirmed|min:6|max:191",
-                'otp_code' => 'required|string|max:6|exists:'.app(config('filament-accounts.model'))->getTable().',otp_code',
-                config('filament-accounts.login_by') => 'required|string|max:255|exists:'.app(config('filament-accounts.model'))->getTable().',username',
+                'otp_code' => 'required|string|max:6|exists:' . app(config('filament-accounts.model'))->getTable() . ',otp_code',
+                config('filament-accounts.login_by') => 'required|string|max:255|exists:' . app(config('filament-accounts.model'))->getTable() . ',username',
             ]);
 
             $user = app(config('filament-accounts.model'))->where("username", $request->get(config('filament-accounts.login_by')))->first();
@@ -513,8 +501,8 @@ class AuthController extends Controller
                       *  @body array{status: true, message: "Password Updated"}
                       */
                     return response()->json([
-                        "status"=> true,
-                        "message"=> __("Password Updated")
+                        "status" => true,
+                        "message" => __("Password Updated")
                     ], 200);
                 }
 
@@ -524,8 +512,8 @@ class AuthController extends Controller
                   *  @body array{status: false, message: "sorry this code is not valid or expired"}
                   */
                 return response()->json([
-                    "status"=> true,
-                    "message"=> __('sorry this code is not valid or expired')
+                    "status" => true,
+                    "message" => __('sorry this code is not valid or expired')
                 ], 400);
             }
 

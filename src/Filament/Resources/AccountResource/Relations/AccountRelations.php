@@ -1,10 +1,10 @@
 <?php
 
-namespace TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Releations;
+namespace TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Relations;
 
 use TomatoPHP\FilamentAccounts\Facades\FilamentAccounts;
 
-class AccountReleations
+class AccountRelations
 {
     public static function get(): array
     {

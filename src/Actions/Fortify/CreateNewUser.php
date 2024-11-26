@@ -2,13 +2,14 @@
 
 namespace TomatoPHP\FilamentAccounts\Actions\Fortify;
 
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
-use TomatoPHP\FilamentAccounts\Models\Account;
-use TomatoPHP\FilamentAccounts\Models\Team;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -28,14 +29,16 @@ class CreateNewUser implements CreatesNewUsers
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
 
-        return DB::transaction(function () use ($input) {
-            return tap(Account::create([
+        $account = Helpers::loadAccountModelClass();
+
+        return DB::transaction(function () use ($input, $account) {
+            return tap($account::create([
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'loginBy' => 'email',
                 'type' => 'account',
                 'password' => Hash::make($input['password']),
-            ]), function (Account $user) {
+            ]), function (Model $user) {
                 $this->createTeam($user);
             });
         });
@@ -44,11 +47,12 @@ class CreateNewUser implements CreatesNewUsers
     /**
      * Create a personal team for the user.
      */
-    protected function createTeam(Account $user): void
+    protected function createTeam(Model $user): void
     {
-        $user->ownedTeams()->save(Team::forceCreate([
+        $team = Helpers::loadTeamModelClass();
+        $user->ownedTeams()->save($team::forceCreate([
             'account_id' => $user->id,
-            'name' => explode(' ', $user->name, 2)[0]."'s Team",
+            'name' => explode(' ', $user->name, 2)[0] . "'s Team",
             'personal_team' => true,
         ]));
     }

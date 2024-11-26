@@ -2,19 +2,13 @@
 
 namespace TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\RelationManagers;
 
-use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use TomatoPHP\FilamentAccounts\Components\AccountColumn;
 use TomatoPHP\FilamentTypes\Components\TypeColumn;
-use TomatoPHP\FilamentTypes\Models\Type;
 
 class AccountRequestsManager extends RelationManager
 {
@@ -24,7 +18,6 @@ class AccountRequestsManager extends RelationManager
     {
         return trans('filament-accounts::messages.requests.label');
     }
-
 
     /**
      * @return string|null
@@ -52,15 +45,17 @@ class AccountRequestsManager extends RelationManager
 
     public function form(Form $form): Form
     {
+        $type = config('filament-types.model') ?? \TomatoPHP\FilamentTypes\Models\Type::class;
+
         return $form->schema([
             Forms\Components\Select::make('type')
                 ->label(trans('filament-accounts::messages.requests.columns.type'))
                 ->searchable()
-                ->options(Type::where('for', 'contacts')->where('type', 'type')->get()->pluck('name', 'key')->toArray()),
+                ->options($type::where('for', 'contacts')->where('type', 'type')->get()->pluck('name', 'key')->toArray()),
             Forms\Components\Select::make('status')
                 ->label(trans('filament-accounts::messages.requests.columns.status'))
                 ->searchable()
-                ->options(Type::where('for', 'contacts')->where('type', 'status')->get()->pluck('name', 'key')->toArray())
+                ->options($type::where('for', 'contacts')->where('type', 'status')->get()->pluck('name', 'key')->toArray())
                 ->default('pending'),
 
             Forms\Components\Toggle::make('is_approved')
@@ -76,16 +71,15 @@ class AccountRequestsManager extends RelationManager
             ->label(trans('filament-accounts::messages.requests.columns.user'))
             ->sortable();
 
-        if(filament('filament-accounts')->useTypes){
-            $columns[] =TypeColumn::make('type')
+        if (filament('filament-accounts')->useTypes) {
+            $columns[] = TypeColumn::make('type')
                 ->label(trans('filament-accounts::messages.requests.columns.type'))
                 ->searchable();
             $columns[] = TypeColumn::make('status')
                 ->label(trans('filament-accounts::messages.requests.columns.status'))
                 ->searchable();
-        }
-        else {
-            $columns[] =Tables\Columns\TextColumn::make('type')
+        } else {
+            $columns[] = Tables\Columns\TextColumn::make('type')
                 ->label(trans('filament-accounts::messages.requests.columns.type'))
                 ->searchable();
             $columns[] = Tables\Columns\TextColumn::make('status')
@@ -114,13 +108,11 @@ class AccountRequestsManager extends RelationManager
 
         return $table
             ->columns($columns)
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\Action::make('edit')
                     ->icon('heroicon-s-pencil-square')
-                    ->url(fn($record) =>route('filament.'.filament()->getCurrentPanel()->getId().'.resources.account-requests.edit', $record)),
+                    ->url(fn($record) => route('filament.' . filament()->getCurrentPanel()->getId() . '.resources.account-requests.edit', $record)),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

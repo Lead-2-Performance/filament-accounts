@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Jetstream\Jetstream;
-use Laravel\Jetstream\TeamInvitation as JetstreamTeamInvitation;
+use Laravel\Jetstream\TeamInvitation as JetStreamTeamInvitation;
 
-class TeamInvitation extends JetstreamTeamInvitation
+class TeamInvitation extends JetStreamTeamInvitation
 {
     /**
      * The attributes that are mass assignable.

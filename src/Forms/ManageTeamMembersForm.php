@@ -3,14 +3,10 @@
 namespace TomatoPHP\FilamentAccounts\Forms;
 
 use Filament\Forms;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Laravel\Jetstream\Jetstream;
 use Laravel\Jetstream\Role;
@@ -45,7 +41,7 @@ class ManageTeamMembersForm
                 ->label(trans('filament-accounts::messages.teams.members.role'))
                 ->searchable()
                 ->preload()
-                ->options(function (){
+                ->options(function () {
                     $roles = collect(Jetstream::$roles)->transform(function ($role) {
                         return (new Role(
                             $role->key,

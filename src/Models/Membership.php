@@ -2,9 +2,9 @@
 
 namespace TomatoPHP\FilamentAccounts\Models;
 
-use Laravel\Jetstream\Membership as JetstreamMembership;
+use Laravel\Jetstream\Membership as JetStreamMembership;
 
-class Membership extends JetstreamMembership
+class Membership extends JetStreamMembership
 {
     /**
      * Indicates if the IDs are auto-incrementing.

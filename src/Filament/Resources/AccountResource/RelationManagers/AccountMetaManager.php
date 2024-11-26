@@ -2,20 +2,16 @@
 
 namespace TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\RelationManagers;
 
-use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AccountMetaManager extends RelationManager
 {
-    protected static string $relationship = 'accountsMetas';
+    protected static string $relationship = 'accountsMeta';
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
@@ -73,9 +69,7 @@ class AccountMetaManager extends RelationManager
             ->headerActions([
                 Tables\Actions\CreateAction::make()
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),

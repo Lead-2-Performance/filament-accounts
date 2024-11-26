@@ -3,7 +3,7 @@
 namespace TomatoPHP\FilamentAccounts\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Kirschbaum\PowerJoins\PowerJoins;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
 /**
  * @property integer $id
@@ -19,7 +19,7 @@ use Kirschbaum\PowerJoins\PowerJoins;
  * @property string $updated_at
  * @property Status $status
  * @property Type $type
- * @property ContactsMeta[] $contactsMetas
+ * @property ContactsMeta[] $contactsMeta
  */
 class Contact extends Model
 {
@@ -37,7 +37,8 @@ class Contact extends Model
      */
     public function status()
     {
-        return $this->belongsTo('TomatoPHP\TomatoCategory\App\Models\Type');
+        $model = config('filament-types.model') ?? \TomatoPHP\FilamentTypes\Models\Type::class;
+        return $this->belongsTo($model);
     }
 
     /**
@@ -45,14 +46,15 @@ class Contact extends Model
      */
     public function type()
     {
-        return $this->belongsTo('TomatoPHP\TomatoCategory\App\Models\Type');
+        $model = config('filament-types.model') ?? \TomatoPHP\FilamentTypes\Models\Type::class;
+        return $this->belongsTo($model);
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function contactsMetas()
+    public function contactsMeta()
     {
-        return $this->hasMany('TomatoPHP\FilamentAccounts\Models\ContactsMeta');
+        return $this->hasMany(Helpers::loadContactMetaModelClass());
     }
 }

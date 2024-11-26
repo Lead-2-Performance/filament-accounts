@@ -2,7 +2,6 @@
 
 namespace TomatoPHP\FilamentAccounts\Livewire;
 
-use App\Models\Account;
 use Carbon\Carbon;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
@@ -11,23 +10,19 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse;
-use Filament\Models\Contracts\FilamentUser;
 use Filament\Notifications\Notification;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Pages\SimplePage;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Livewire\Component;
 use TomatoPHP\FilamentAccounts\Events\SendOTP;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
 class Otp extends SimplePage implements HasForms, HasActions
 {
@@ -48,7 +43,7 @@ class Otp extends SimplePage implements HasForms, HasActions
         if (filament()->auth()->check()) {
             redirect()->intended(Filament::getUrl());
         }
-        if(!request()->has('email')){
+        if (!request()->has('email')) {
             redirect()->to('/login');
         }
 
@@ -94,11 +89,11 @@ class Otp extends SimplePage implements HasForms, HasActions
             return null;
         }
 
-        $findAccountWithEmail = Account::query()
+        $findAccountWithEmail = Helpers::loadAccountModelClass()::query()
             ->where('email', $this->data['email'])
             ->first();
 
-        if(!$findAccountWithEmail){
+        if (!$findAccountWithEmail) {
             $this->throwFailureOtpException();
         }
 
@@ -142,7 +137,7 @@ class Otp extends SimplePage implements HasForms, HasActions
             ->first();
 
 
-        if(!$findAccountWithEmailAndOTP){
+        if (!$findAccountWithEmailAndOTP) {
             $this->throwFailureOtpException();
         }
 
@@ -150,7 +145,7 @@ class Otp extends SimplePage implements HasForms, HasActions
 
         $user = auth()->user();
 
-        if($user){
+        if ($user) {
             $user->otp_code = null;
             $user->otp_activated_at = Carbon::now();
             $user->is_active = true;

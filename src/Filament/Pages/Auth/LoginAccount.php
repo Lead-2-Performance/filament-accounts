@@ -4,17 +4,10 @@ namespace TomatoPHP\FilamentAccounts\Filament\Pages\Auth;
 
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\Login;
-use Filament\Pages\Auth\Register;
-use Filament\Pages\Tenancy\EditTenantProfile;
 use Illuminate\Validation\ValidationException;
 
 class LoginAccount extends Login
@@ -89,5 +82,4 @@ class LoginAccount extends Login
 
         return app(LoginResponse::class);
     }
-
 }

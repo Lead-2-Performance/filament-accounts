@@ -2,11 +2,10 @@
 
 namespace TomatoPHP\FilamentAccounts\Actions\Fortify;
 
-
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
-use TomatoPHP\FilamentAccounts\Models\Account;
 
 class UpdateUserPassword implements UpdatesUserPasswords
 {
@@ -17,7 +16,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
      *
      * @param  array<string, string>  $input
      */
-    public function update(Account $user, array $input): void
+    public function update(Model $user, array $input): void
     {
         Validator::make($input, [
             'current_password' => ['required', 'string', 'current_password:web'],

@@ -3,6 +3,7 @@
 namespace TomatoPHP\FilamentAccounts\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
 /**
  * @property integer $id
@@ -27,6 +28,6 @@ class ContactsMeta extends Model
      */
     public function contact()
     {
-        return $this->belongsTo('TomatoPHP\FilamentAccounts\Models\Contact');
+        return $this->belongsTo(Helpers::loadContactModelClass());
     }
 }

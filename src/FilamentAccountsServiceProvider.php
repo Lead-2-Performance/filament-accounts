@@ -15,13 +15,9 @@ use TomatoPHP\FilamentAccounts\Listeners\SwitchTeam;
 use TomatoPHP\FilamentAccounts\Livewire\ContactUs;
 use TomatoPHP\FilamentAccounts\Livewire\Otp;
 use TomatoPHP\FilamentAccounts\Livewire\SanctumTokens;
-use TomatoPHP\FilamentAccounts\Models\Membership;
-use TomatoPHP\FilamentAccounts\Models\Team;
-use TomatoPHP\FilamentAccounts\Models\TeamInvitation;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 use TomatoPHP\FilamentAlerts\Services\SendNotification;
-use TomatoPHP\FilamentPlugins\Facades\FilamentPlugins;
 use TomatoPHP\FilamentTypes\Facades\FilamentTypes;
-
 
 class FilamentAccountsServiceProvider extends ServiceProvider
 {
@@ -29,52 +25,52 @@ class FilamentAccountsServiceProvider extends ServiceProvider
     {
         //Register generate command
         $this->commands([
-           \TomatoPHP\FilamentAccounts\Console\FilamentAccountsInstall::class,
+            \TomatoPHP\FilamentAccounts\Console\FilamentAccountsInstall::class,
         ]);
 
         //Register Config file
-        $this->mergeConfigFrom(__DIR__.'/../config/filament-accounts.php', 'filament-accounts');
+        $this->mergeConfigFrom(__DIR__ . '/../config/filament-accounts.php', 'filament-accounts');
 
         //Publish Config
         $this->publishes([
-           __DIR__.'/../config/filament-accounts.php' => config_path('filament-accounts.php'),
+            __DIR__ . '/../config/filament-accounts.php' => config_path('filament-accounts.php'),
         ], 'filament-accounts-config');
 
         //Register Migrations
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
         //Publish Migrations
         $this->publishes([
-           __DIR__.'/../database/migrations' => database_path('migrations'),
+            __DIR__ . '/../database/migrations' => database_path('migrations'),
         ], 'filament-accounts-migrations');
         //Register views
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'filament-accounts');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'filament-accounts');
 
         //Publish Views
         $this->publishes([
-           __DIR__.'/../resources/views' => resource_path('views/vendor/filament-accounts'),
+            __DIR__ . '/../resources/views' => resource_path('views/vendor/filament-accounts'),
         ], 'filament-accounts-views');
 
         //Register Langs
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'filament-accounts');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'filament-accounts');
 
         //Publish Lang
         $this->publishes([
-           __DIR__.'/../resources/lang' => base_path('lang/vendor/filament-accounts'),
+            __DIR__ . '/../resources/lang' => base_path('lang/vendor/filament-accounts'),
         ], 'filament-accounts-lang');
 
         //Register Routes
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
-        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
 
         $this->publishes([
             __DIR__ . '/../publish/Account.php' => app_path('Models/Account.php'),
         ], 'filament-accounts-model');
 
         $this->publishes([
-            __DIR__ . '/../publish/migrations/create_teams_table.php' => database_path('migrations/'.  date('Y_m_d_His', ((int)time())+1) . '_create_teams_table.php'),
-            __DIR__ . '/../publish/migrations/create_team_invitations_table.php' => database_path('migrations/'.  date('Y_m_d_His', ((int)time())+2) . '_create_team_invitations_table.php'),
-            __DIR__ . '/../publish/migrations/create_team_user_table.php' => database_path('migrations/'.  date('Y_m_d_His', ((int)time())+3) . '_create_team_user_table.php'),
+            __DIR__ . '/../publish/migrations/create_teams_table.php' => database_path('migrations/' .  date('Y_m_d_His', ((int)time()) + 1) . '_create_teams_table.php'),
+            __DIR__ . '/../publish/migrations/create_team_invitations_table.php' => database_path('migrations/' .  date('Y_m_d_His', ((int)time()) + 2) . '_create_team_invitations_table.php'),
+            __DIR__ . '/../publish/migrations/create_team_user_table.php' => database_path('migrations/' .  date('Y_m_d_His', ((int)time()) + 3) . '_create_team_user_table.php'),
         ], 'filament-accounts-teams-migrations');
 
         $this->publishes([
@@ -112,11 +108,11 @@ class FilamentAccountsServiceProvider extends ServiceProvider
             return new \TomatoPHP\FilamentAccounts\Services\BuildAuth();
         });
 
-        if(class_exists(Jetstream::class)){
-            Jetstream::useUserModel(config('filament-accounts.model'));
-            Jetstream::useTeamModel(Team::class);
-            Jetstream::useMembershipModel(Membership::class);
-            Jetstream::useTeamInvitationModel(TeamInvitation::class);
+        if (class_exists(Jetstream::class)) {
+            Jetstream::useUserModel(Helpers::loadAccountModelClass());
+            Jetstream::useTeamModel(Helpers::loadTeamModelClass());
+            Jetstream::useMembershipModel(Helpers::loadTeamMembershipModelClass());
+            Jetstream::useTeamInvitationModel(Helpers::loadTeamInvitationModelClass());
             Jetstream::$registersRoutes = false;
             Fortify::$registersRoutes = false;
 
@@ -135,11 +131,11 @@ class FilamentAccountsServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-        if(class_exists(Jetstream::class)){
+        if (class_exists(Jetstream::class)) {
             $this->configurePermissions();
         }
 
-        if(config('filament-accounts.features.types')){
+        if (config('filament-accounts.features.types')) {
             FilamentTypes::register([
                 'types',
                 'groups'

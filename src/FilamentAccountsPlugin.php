@@ -6,11 +6,7 @@ use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Illuminate\Support\Facades\Config;
 use Nwidart\Modules\Module;
-use TomatoPHP\FilamentAccounts\Filament\Resources\AccountRequestResource;
-use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource;
-use TomatoPHP\FilamentAccounts\Filament\Resources\ContactResource;
-use TomatoPHP\FilamentAccounts\Filament\Resources\TeamResource;
-use TomatoPHP\FilamentPlugins\Facades\FilamentPlugins;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
 class FilamentAccountsPlugin implements Plugin
 {
@@ -42,36 +38,35 @@ class FilamentAccountsPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        if(class_exists(Module::class) && \Nwidart\Modules\Facades\Module::find('FilamentAccounts')?->isEnabled()){
+        if (class_exists(Module::class) && \Nwidart\Modules\Facades\Module::find('FilamentAccounts')?->isEnabled()) {
             $this->isActive = true;
-        }
-        else {
+        } else {
             $this->isActive = true;
         }
 
-        if($this->isActive){
+        if ($this->isActive) {
             $resources = [
-                AccountResource::class
+                Helpers::loadAccountResourceClass()
             ];
 
-            if($this->useRequests){
-                $resources[] = AccountRequestResource::class;
+            if ($this->useRequests) {
+                $resources[] = Helpers::loadAccountRequestResourceClass()::class;
             }
 
-            if($this->useContactUs){
-                $resources[] = ContactResource::class;
+            if ($this->useContactUs) {
+                $resources[] = Helpers::loadContactResourceClass()::class;
             }
 
-            if($this->useTeams){
-                $resources[] = TeamResource::class;
+            if ($this->useTeams) {
+                $resources[] = Helpers::loadTeamResourceClass()::class;
             }
 
-            if($this->useTypes){
+            if ($this->useTypes) {
                 $panel->pages([
-                    AccountResource\Pages\AccountTypes::class,
-                    ContactResource\Pages\ContactStatusTypes::class,
-                    AccountRequestResource\Pages\RequestsStatus::class,
-                    AccountRequestResource\Pages\RequestsTypes::class
+                    Helpers::loadAccountTypePageClass(),
+                    Helpers::loadContactStatusPageClass(),
+                    Helpers::loadAccountRequestStatusPageClass(),
+                    Helpers::loadAccountRequestTypePageClass(),
                 ]);
             }
 
@@ -191,7 +186,7 @@ class FilamentAccountsPlugin implements Plugin
 
     public function boot(Panel $panel): void
     {
-        if($this->isActive){
+        if ($this->isActive) {
             Config::set('filament-accounts.features.locations', $this->useLocations);
             Config::set('filament-accounts.features.meta', $this->useAccountMeta);
             Config::set('filament-accounts.features.requests', $this->useRequests);
@@ -204,7 +199,6 @@ class FilamentAccountsPlugin implements Plugin
             Config::set('filament-accounts.features.impersonate.active', $this->useImpersonate);
             Config::set('filament-accounts.features.impersonate.redirect', $this->impersonateRedirect);
         }
-
     }
 
     public static function make(): static

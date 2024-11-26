@@ -3,25 +3,24 @@
 namespace TomatoPHP\FilamentAccounts\Filament\Resources;
 
 use TomatoPHP\FilamentAccounts\Filament\Resources\ContactResource\Pages;
-use TomatoPHP\FilamentAccounts\Filament\Resources\ContactResource\RelationManagers;
-use TomatoPHP\FilamentAccounts\Models\Contact;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 use TomatoPHP\FilamentTypes\Components\TypeColumn;
-use TomatoPHP\FilamentTypes\Models\Type;
 
 class ContactResource extends Resource
 {
-    protected static ?string $model = Contact::class;
-
     protected static ?int $navigationSort = 3;
 
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-bottom-center-text';
+
+    public static function getModel(): string
+    {
+        return Helpers::loadContactModelClass();
+    }
 
     public static function getNavigationGroup(): ?string
     {
@@ -39,23 +38,23 @@ class ContactResource extends Resource
     }
     public static function form(Form $form): Form
     {
+        $model = config('filament-types.model') ?? \TomatoPHP\FilamentTypes\Models\Type::class;
         $fields = [];
-        if(filament('filament-accounts')->useTypes) {
+        if (filament('filament-accounts')->useTypes) {
             $fields[] = Forms\Components\Select::make('status')
                 ->label(trans('filament-accounts::messages.contacts.columns.status'))
                 ->columnSpan(2)
                 ->searchable()
-                ->options(Type::where('for', 'contacts')->where('type', 'status')->pluck('name', 'key')->toArray())
+                ->options($model::where('for', 'contacts')->where('type', 'status')->pluck('name', 'key')->toArray())
                 ->default('pending');
-        }
-        else {
+        } else {
             $fields[] = Forms\Components\TextInput::make('status')
                 ->label(trans('filament-accounts::messages.contacts.columns.status'))
                 ->columnSpan(2)
                 ->default('pending');
         }
         return $form
-            ->schema(array_merge($fields,[
+            ->schema(array_merge($fields, [
 
                 Forms\Components\TextInput::make('subject')
                     ->label(trans('filament-accounts::messages.contacts.columns.subject'))
@@ -77,12 +76,11 @@ class ContactResource extends Resource
     public static function table(Table $table): Table
     {
         $columns = [];
-        if(filament('filament-accounts')->useTypes) {
+        if (filament('filament-accounts')->useTypes) {
             $columns[] = TypeColumn::make('status')
                 ->label(trans('filament-accounts::messages.contacts.columns.status'))
                 ->searchable();
-        }
-        else {
+        } else {
             $columns[] = Tables\Columns\TextColumn::make('status')
                 ->label(trans('filament-accounts::messages.contacts.columns.status'))
                 ->searchable();

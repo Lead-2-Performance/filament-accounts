@@ -13,9 +13,9 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
-use TomatoPHP\FilamentAccounts\Models\Contact;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
-class ContactUs extends Component implements HasForms,HasActions
+class ContactUs extends Component implements HasForms, HasActions
 {
     use InteractsWithActions;
     use InteractsWithForms;
@@ -60,9 +60,9 @@ class ContactUs extends Component implements HasForms,HasActions
                 ])
             ])
             ->label(trans('filament-accounts::messages.contact-us.label'))
-            ->action(function(array $data){
+            ->action(function (array $data) {
                 // Send email to admin
-                Contact::query()->create($data);
+                Helpers::loadContactModelClass()::query()->create($data);
 
                 Notification::make()
                     ->title(trans('filament-accounts::messages.contact-us.notification.title'))

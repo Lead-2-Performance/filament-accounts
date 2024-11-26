@@ -1,18 +1,19 @@
 <?php
 
 namespace TomatoPHP\FilamentAccounts\Http\Controllers\APIs;
+
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use TomatoPHP\FilamentAccounts\Helpers\Response;
-use TomatoPHP\FilamentAccounts\Models\AccountRequest;
 
 class AccountRequestsController extends Controller
 {
     public function index(Request $request)
     {
         $query = AccountRequest::query();
-        $query->where('account_id',$request->user()->id);
-        $query->with('accountRequestMetas');
+        $query->where('account_id', $request->user()->id);
+        $query->with('accountRequestMeta');
 
         return Response::data($query->paginate(10), 'Account Requests Loaded Successfully');
     }
@@ -30,22 +31,22 @@ class AccountRequestsController extends Controller
             "type" => $request->get('type'),
         ]);
 
-        foreach ($request->get('payload') as $key=>$item){
-            $accountRequest->accountRequestMetas()->create([
+        foreach ($request->get('payload') as $key => $item) {
+            $accountRequest->accountRequestMeta()->create([
                 'key' => $key,
                 'value' => $item
             ]);
         }
 
-        $accountRequest->load('accountRequestMetas');
+        $accountRequest->load('accountRequestMeta');
 
         return Response::data($accountRequest, 'Account Request Created Successfully');
     }
 
     public function show(AccountRequest $accountRequest, Request $request)
     {
-        if($accountRequest->account_id === $request->user()->id ) {
-            $accountRequest->load('accountRequestMetas');
+        if ($accountRequest->account_id === $request->user()->id) {
+            $accountRequest->load('accountRequestMeta');
             return Response::data($accountRequest, 'AccountRequest Loaded Successfully');
         }
 
@@ -54,28 +55,28 @@ class AccountRequestsController extends Controller
 
     public function update(AccountRequest $accountRequest, Request $request)
     {
-        if($accountRequest->account_id === $request->user()->id ) {
+        if ($accountRequest->account_id === $request->user()->id) {
             $request->validate([
                 'type' => 'sometimes|max:255|string',
                 'payload' => 'sometimes|array|min:1',
             ]);
 
-            if($request->has('type')){
+            if ($request->has('type')) {
                 $accountRequest->update([
                     "type" => $request->get('type'),
                 ]);
             }
 
 
-            foreach ($request->get('payload') as $key=>$item){
-                $accountRequest->accountRequestMetas()->where([
+            foreach ($request->get('payload') as $key => $item) {
+                $accountRequest->accountRequestMeta()->where([
                     'key' => $key
                 ])->update([
                     'value' => is_string($item) ? json_encode($item) : $item
                 ]);
             }
 
-            $accountRequest->load('accountRequestMetas');
+            $accountRequest->load('accountRequestMeta');
 
             return Response::data($accountRequest, 'Account Request Loaded Successfully');
         }
@@ -83,9 +84,9 @@ class AccountRequestsController extends Controller
         return Response::errors('Sorry You do not have access to this request', null, 403);
     }
 
-    public function destroy(AccountRequest $accountRequest, Request $request)
+    public function destroy(Model $accountRequest, Request $request)
     {
-        if($accountRequest->account_id === $request->user()->id ) {
+        if ($accountRequest->account_id === $request->user()->id) {
             $accountRequest->delete();
             return Response::success('Account Request Deleted Successfully');
         }

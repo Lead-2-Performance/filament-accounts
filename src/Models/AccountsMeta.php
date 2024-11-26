@@ -4,7 +4,7 @@ namespace TomatoPHP\FilamentAccounts\Models;
 
 use GeneaLabs\LaravelModelCaching\CachedModel;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
-use Illuminate\Database\Eloquent\Model;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
 /**
  * @property integer $id
@@ -22,7 +22,7 @@ class AccountsMeta extends CachedModel
     use Cachable;
 
     protected $cachePrefix = "tomato_accounts_meta_";
-    
+
     /**
      * @var array
      */
@@ -36,6 +36,6 @@ class AccountsMeta extends CachedModel
      */
     public function account()
     {
-        return $this->belongsTo('TomatoPHP\FilamentAccounts\Models\Account');
+        return $this->belongsTo(Helpers::loadAccountModelClass());
     }
 }

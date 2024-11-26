@@ -17,7 +17,7 @@ use Illuminate\Support\Carbon;
 
 class AccountRequestMetaManager extends RelationManager
 {
-    protected static string $relationship = 'accountRequestMetas';
+    protected static string $relationship = 'accountRequestMeta';
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
@@ -36,16 +36,16 @@ class AccountRequestMetaManager extends RelationManager
                 Forms\Components\TextInput::make('value')
                     ->disabled(),
                 Forms\Components\Toggle::make('is_approved')
-                    ->afterStateUpdated(function (Get $get, Forms\Set $set){
-                        if($get('is_approved')) {
+                    ->afterStateUpdated(function (Get $get, Forms\Set $set) {
+                        if ($get('is_approved')) {
                             $set('is_rejected', false);
                             $set('rejected_reason', "");
                         }
                     })
                     ->live(),
                 Forms\Components\Toggle::make('is_rejected')
-                    ->afterStateUpdated(function (Get $get, Forms\Set $set){
-                        if($get('is_rejected')) {
+                    ->afterStateUpdated(function (Get $get, Forms\Set $set) {
+                        if ($get('is_rejected')) {
                             $set('is_approved', false);
                         }
                     })
@@ -67,14 +67,13 @@ class AccountRequestMetaManager extends RelationManager
                 Tables\Columns\TextColumn::make('value')
                     ->label('value'),
                 Tables\Columns\ToggleColumn::make('is_approved')
-                    ->afterStateUpdated(function ($record){
-                        if($record->is_approved) {
+                    ->afterStateUpdated(function ($record) {
+                        if ($record->is_approved) {
                             $record->is_approved_at = Carbon::now();
                             $record->is_rejected_at = null;
                             $record->is_rejected = false;
                             $record->save();
-                        }
-                        else {
+                        } else {
                             $record->is_approved_at = null;
                             $record->save();
                         }
@@ -83,14 +82,13 @@ class AccountRequestMetaManager extends RelationManager
                         $this->getOwnerRecord()->save();
                     }),
                 Tables\Columns\ToggleColumn::make('is_rejected')
-                    ->afterStateUpdated(function ($record){
-                        if($record->is_rejected) {
+                    ->afterStateUpdated(function ($record) {
+                        if ($record->is_rejected) {
                             $record->is_rejected_at = Carbon::now();
                             $record->is_approved_at = null;
                             $record->is_approved = false;
                             $record->save();
-                        }
-                        else {
+                        } else {
                             $record->is_rejected_at = null;
                             $record->rejected_reason = null;
                             $record->save();
@@ -115,19 +113,17 @@ class AccountRequestMetaManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true),
 
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->using(function ($record, $data) {
-                        if($data['is_rejected'] && !empty($data['rejected_reason'])) {
+                        if ($data['is_rejected'] && !empty($data['rejected_reason'])) {
                             $data['is_rejected_at'] = now();
                             $data['is_approved_at'] = null;
                             $data['is_approved'] = false;
                             $data['user_id'] =  auth()->user()->id;
                         }
-                        if($data['is_approved']) {
+                        if ($data['is_approved']) {
                             $data['is_rejected_at'] = null;
                             $data['is_rejected'] = false;
                             $data['is_approved_at'] = now();
@@ -139,7 +135,7 @@ class AccountRequestMetaManager extends RelationManager
                         $this->getOwnerRecord()->save();
 
                         $record->update($data);
-                }),
+                    }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

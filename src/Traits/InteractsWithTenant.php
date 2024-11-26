@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasTeams;
-use TomatoPHP\FilamentAccounts\Models\Team;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
 trait InteractsWithTenant
 {
@@ -38,6 +38,7 @@ trait InteractsWithTenant
 
     public function latestTeam(): BelongsTo
     {
-        return $this->belongsTo(Team::class, 'current_team_id');
+        $model = Helpers::loadTeamModelClass();
+        return $this->belongsTo($model, 'current_team_id');
     }
 }

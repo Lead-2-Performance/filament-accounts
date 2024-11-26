@@ -12,7 +12,6 @@ class ContactStatusTypes extends BaseTypePage
         return trans('filament-accounts::messages.contact-us.status');
     }
 
-
     public function getType(): string
     {
         return "status";

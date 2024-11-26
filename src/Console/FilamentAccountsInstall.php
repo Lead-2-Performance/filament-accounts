@@ -4,7 +4,6 @@ namespace TomatoPHP\FilamentAccounts\Console;
 
 use Illuminate\Console\Command;
 use TomatoPHP\ConsoleHelpers\Traits\RunCommand;
-use TomatoPHP\FilamentTypes\Models\Type;
 
 class FilamentAccountsInstall extends Command
 {
@@ -41,7 +40,8 @@ class FilamentAccountsInstall extends Command
         $this->callSilent('optimize:clear');
         $this->artisanCommand(["migrate"]);
         $this->artisanCommand(["optimize:clear"]);
-        if(config('filament-accounts.features.types') && class_exists(\TomatoPHP\FilamentTypes\Models\Type::class)){
+        $type = config('filament-types.model') ?? \TomatoPHP\FilamentTypes\Models\Type::class;
+        if (config('filament-accounts.features.types') && class_exists($type)) {
             $typesArray = [
                 [
                     "name" => [
@@ -110,10 +110,10 @@ class FilamentAccountsInstall extends Command
                     "color" => "#38fc34"
                 ]
             ];
-            foreach ($typesArray as $item){
-                $checkFirst = Type::query()->where('key',$item['key'])->first();
-                if(!$checkFirst){
-                    Type::query()->create($item);
+            foreach ($typesArray as $item) {
+                $checkFirst = $type::query()->where('key', $item['key'])->first();
+                if (!$checkFirst) {
+                    $type::query()->create($item);
                 }
             }
         }

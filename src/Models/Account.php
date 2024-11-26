@@ -13,6 +13,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 use TomatoPHP\FilamentLocations\Models\Location;
 
 /**
@@ -35,7 +36,7 @@ use TomatoPHP\FilamentLocations\Models\Location;
  * @property string $deleted_at
  * @property string $created_at
  * @property string $updated_at
- * @property AccountsMeta[] $accountsMetas
+ * @property AccountsMeta[] $accountsMeta
  * @property Model meta($key, $value)
  * @property Location[] $locations
  */
@@ -102,7 +103,7 @@ class Account extends Authenticatable implements HasMedia, HasAvatar
      */
     public function getFilamentAvatarUrl(): ?string
     {
-        return  $this->getFirstMediaUrl('avatar')?? null;
+        return  $this->getFirstMediaUrl('avatar') ?? null;
     }
 
     /**
@@ -125,9 +126,9 @@ class Account extends Authenticatable implements HasMedia, HasAvatar
     /**
      * @return HasMany
      */
-    public function accountsMetas(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function accountsMeta(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany('TomatoPHP\FilamentAccounts\Models\AccountsMeta');
+        return $this->hasMany(Helpers::loadAccountMetaModelClass());
     }
 
 
@@ -136,23 +137,20 @@ class Account extends Authenticatable implements HasMedia, HasAvatar
      * @param mixed $value
      * @return mixed
      */
-    public function meta(string $key, mixed $value=null): mixed
+    public function meta(string $key, mixed $value = null): mixed
     {
-        if($value!==null){
-            if($value === 'null'){
-                return $this->accountsMetas()->updateOrCreate(['key' => $key], ['value' => null]);
+        if ($value !== null) {
+            if ($value === 'null') {
+                return $this->accountsMeta()->updateOrCreate(['key' => $key], ['value' => null]);
+            } else {
+                return $this->accountsMeta()->updateOrCreate(['key' => $key], ['value' => $value]);
             }
-            else {
-                return $this->accountsMetas()->updateOrCreate(['key' => $key], ['value' => $value]);
-            }
-        }
-        else {
-            $meta = $this->accountsMetas()->where('key', $key)->first();
-            if($meta){
+        } else {
+            $meta = $this->accountsMeta()->where('key', $key)->first();
+            if ($meta) {
                 return $meta->value;
-            }
-            else {
-                return $this->accountsMetas()->updateOrCreate(['key' => $key], ['value' => null]);
+            } else {
+                return $this->accountsMeta()->updateOrCreate(['key' => $key], ['value' => null]);
             }
         }
     }
@@ -171,6 +169,6 @@ class Account extends Authenticatable implements HasMedia, HasAvatar
      */
     public function requests(): HasMany
     {
-        return $this->hasMany(AccountRequest::class, 'account_id', 'id');
+        return $this->hasMany(Helpers::loadAccountRequestModelClass(), 'account_id', 'id');
     }
 }

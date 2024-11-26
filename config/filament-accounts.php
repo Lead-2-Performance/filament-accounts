@@ -20,7 +20,7 @@ return [
         "apis" => true,
         "send_otp" => true,
         "impersonate" => [
-            'active'=> false,
+            'active' => false,
             'redirect' => '/app',
         ],
     ],
@@ -74,8 +74,8 @@ return [
      *
      * you can set selected relations to show in account resource
      */
-    "relations" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Releations\AccountReleations::class,
-    
+    "relations" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Relations\AccountRelations::class,
+
 
     /**
      * Accounts Resource Builder
@@ -89,6 +89,30 @@ return [
         "table" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Tables\AccountsTable::class,
         "actions" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Actions\AccountsTableActions::class,
         "filters" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Filters\AccountsFilters::class,
+        "types" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Pages\AccountTypes::class,
         "pages" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Pages\AccountPagesList::class,
-    ]
+    ],
+
+
+    "requests" => [
+        "model" => \TomatoPHP\FilamentAccounts\Models\AccountRequest::class,
+        "resource" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountRequestResource::class,
+        "status" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountRequestResource\Pages\RequestsStatus::class,
+        "types" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountRequestResource\Pages\RequestsTypes::class,
+    ],
+
+    "contact" => [
+        "model" => \TomatoPHP\FilamentAccounts\Models\Contact::class,
+        "status" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Pages\AccountTypes::class,
+        "resource" => \TomatoPHP\FilamentAccounts\Filament\Resources\ContactResource::class,
+    ],
+
+    "meta" => [
+        "model" => \TomatoPHP\FilamentAccounts\Models\AccountsMeta::class,
+        "contact" => \TomatoPHP\FilamentAccounts\Models\ContactsMeta::class,
+        "resource" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\RelationManagers\AccountMetaManager::class,
+    ],
+
+
+
 ];

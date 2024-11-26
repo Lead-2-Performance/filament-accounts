@@ -1,14 +1,12 @@
 <?php
 
 namespace TomatoPHP\FilamentAccounts\Http\Controllers\APIs;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
-use TomatoPHP\FilamentAccounts\Facades\FilamentAccountsAuth;
 use TomatoPHP\FilamentAccounts\Facades\FilamentAccounts;
-use TomatoPHP\FilamentAccounts\Helpers\Response;
-use TomatoPHP\FilamentAccounts\Models\Account;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
 class ProfileController extends Controller
 {
@@ -16,7 +14,7 @@ class ProfileController extends Controller
 
     public bool $otp = true;
 
-    public string $model = Account::class;
+    public string $model;
 
     public string $loginBy = 'email';
 
@@ -31,7 +29,7 @@ class ProfileController extends Controller
     {
         $this->guard = config('filament-accounts.guard');
         $this->otp = config('filament-accounts.required_otp');
-        $this->model = config('filament-accounts.model');
+        $this->model = Helpers::loadAccountModelClass();
         $this->loginBy = config('filament-accounts.login_by');
         $this->loginType = config('filament-accounts.login_by');
         $this->resource = config('filament-accounts.resource', null);
@@ -46,10 +44,11 @@ class ProfileController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function profile(Request $request){
+    public function profile(Request $request)
+    {
         $user = $request->user();
-        if($user){
-            if($this->resource){
+        if ($user) {
+            if ($this->resource) {
                 $user = $this->resource::make($user);
             }
 
@@ -86,16 +85,18 @@ class ProfileController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function update(Request $request){
+    public function update(Request $request)
+    {
         $user = $request->user();
 
-        if($user){
+        if ($user) {
             $request->validate(array_merge(
                 [
                     'name' => 'sometimes|string|max:255',
-                    'email' => 'sometimes|string|email|max:255|unique:accounts,email,'.$user->id,
-                    'phone' => 'sometimes|string|max:255|unique:accounts,phone,'.$user->id,
-                ], FilamentAccounts::getApiValidationEdit()
+                    'email' => 'sometimes|string|email|max:255|unique:accounts,email,' . $user->id,
+                    'phone' => 'sometimes|string|max:255|unique:accounts,phone,' . $user->id,
+                ],
+                FilamentAccounts::getApiValidationEdit()
             ));
 
 
@@ -103,10 +104,9 @@ class ProfileController extends Controller
 
             $data = $request->all();
 
-            if($this->loginBy === 'phone' && $request->has('phone')){
+            if ($this->loginBy === 'phone' && $request->has('phone')) {
                 $data['username'] = $request->get('phone');
-            }
-            elseif($this->loginBy === 'email' && $request->has('email')){
+            } elseif ($this->loginBy === 'email' && $request->has('email')) {
                 $data['username'] = $request->get('email');
             }
 
@@ -116,19 +116,18 @@ class ProfileController extends Controller
 
 
             foreach (FilamentAccounts::getAttachedItems() as $key => $value) {
-                if($value === 'media'){
-                    if($request->hasFile($key)){
+                if ($value === 'media') {
+                    if ($request->hasFile($key)) {
                         $user->addMedia($request->{$key})
                             ->preservingOriginal()
                             ->toMediaCollection($key);
                     }
-                }
-                else {
+                } else {
                     $user->meta($key, $request->get($key));
                 }
             }
 
-            if($this->resource){
+            if ($this->resource) {
                 $getUserModel = $this->resource::make($getUserModel);
             }
 
@@ -165,10 +164,11 @@ class ProfileController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function password(Request $request){
+    public function password(Request $request)
+    {
         $user = $request->user();
 
-        if($user){
+        if ($user) {
             $request->validate([
                 'password' => "required|confirmed|min:6|max:191",
             ]);
@@ -182,8 +182,8 @@ class ProfileController extends Controller
               *  @body array{status: true, message: "Password Updated"}
               */
             return response()->json([
-                "status"=> true,
-                "message"=> __("Password Updated")
+                "status" => true,
+                "message" => __("Password Updated")
             ], 200);
         }
 
@@ -207,7 +207,8 @@ class ProfileController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         auth($this->guard)->logout();
 
         $user = $this->model::find($request->user()->id);
@@ -219,8 +220,8 @@ class ProfileController extends Controller
           *  @body array{status: true, message: "Logout Success"}
           */
         return response()->json([
-            "status"=> true,
-            "message"=> __("Logout Success")
+            "status" => true,
+            "message" => __("Logout Success")
         ], 200);
     }
 
@@ -233,7 +234,8 @@ class ProfileController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function destroy(Request $request){
+    public function destroy(Request $request)
+    {
         $user = $request->user();
         $this->model::where("username", $user->username)->delete();
 
@@ -243,8 +245,8 @@ class ProfileController extends Controller
           *  @body array{status: true, message: "Account Has Been Deleted"}
           */
         return response()->json([
-            "status"=> true,
-            "message"=> __("Account Has Been Deleted")
+            "status" => true,
+            "message" => __("Account Has Been Deleted")
         ], 200);
     }
 }

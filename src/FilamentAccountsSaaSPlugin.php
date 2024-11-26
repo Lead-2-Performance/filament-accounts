@@ -18,11 +18,7 @@ use TomatoPHP\FilamentAccounts\Filament\Pages\CreateTeam;
 use TomatoPHP\FilamentAccounts\Filament\Pages\EditAddress;
 use TomatoPHP\FilamentAccounts\Filament\Pages\EditProfile;
 use TomatoPHP\FilamentAccounts\Filament\Pages\EditTeam;
-use TomatoPHP\FilamentAccounts\Filament\Resources\AccountRequestResource;
-use TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource;
-use TomatoPHP\FilamentAccounts\Filament\Resources\ContactResource;
-use TomatoPHP\FilamentAccounts\Models\Team;
-use TomatoPHP\FilamentPlugins\Facades\FilamentPlugins;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
 class FilamentAccountsSaaSPlugin implements Plugin
 {
@@ -34,9 +30,9 @@ class FilamentAccountsSaaSPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        if($this->allowTenants){
+        if ($this->allowTenants) {
             $panel
-                ->tenant($this->useJetstreamTeamModel ? Jetstream::teamModel(): Team::class, 'id')
+                ->tenant($this->useJetStreamTeamModel ? Jetstream::teamModel() : Helpers::loadTeamModelClass(), 'id')
                 ->tenantRegistration(CreateTeam::class);
         }
 
@@ -46,81 +42,80 @@ class FilamentAccountsSaaSPlugin implements Plugin
 
         $menuItems = [];
 
-        if($this->databaseNotifications){
+        if ($this->databaseNotifications) {
             $panel->databaseNotifications();
         }
 
-        if($this->editProfile){
+        if ($this->editProfile) {
             $pages[] = EditProfile::class;
 
-            if($this->editProfileMenu){
+            if ($this->editProfileMenu) {
                 $panel->userMenuItems([
                     "profile" => MenuItem::make()
                         ->label(fn(): string => auth('accounts')->user()?->name)
                         ->icon('heroicon-s-user')
-                        ->url(fn (): string => EditProfile::getUrl())
+                        ->url(fn(): string => EditProfile::getUrl())
                 ]);
             }
         }
 
-        if($this->canManageAddress){
+        if ($this->canManageAddress) {
             $pages[] = EditAddress::class;
             $menuItems[] = MenuItem::make()
                 ->label(fn(): string => EditAddress::getNavigationLabel())
                 ->icon('heroicon-s-map-pin')
-                ->url(fn (): string => EditAddress::getUrl());
+                ->url(fn(): string => EditAddress::getUrl());
         }
 
-        if($this->canManageRequests){
+        if ($this->canManageRequests) {
             $pages[] = AccountRequest::class;
             $menuItems[] = MenuItem::make()
                 ->label(fn(): string => AccountRequest::getNavigationLabel())
                 ->icon('heroicon-s-rectangle-stack')
-                ->url(fn (): string => AccountRequest::getUrl());
+                ->url(fn(): string => AccountRequest::getUrl());
         }
 
-        if($this->APITokenManager){
+        if ($this->APITokenManager) {
             $pages[] = ApiTokens::class;
 
-            if($this->editProfileMenu){
+            if ($this->editProfileMenu) {
                 $menuItems[] = MenuItem::make()
                     ->label(fn(): string => ApiTokens::getNavigationLabel())
                     ->icon('heroicon-s-lock-closed')
-                    ->url(fn (): string => ApiTokens::getUrl());
+                    ->url(fn(): string => ApiTokens::getUrl());
             }
         }
 
-        if($this->editTeam){
+        if ($this->editTeam) {
             $panel->livewireComponents([
                 EditTeam::class
             ]);
             $panel->tenantProfile(EditTeam::class);
         }
 
-        if($this->checkAccountStatusInLogin){
+        if ($this->checkAccountStatusInLogin) {
             $panel->login(LoginAccount::class);
         }
 
 
-        if($this->registration){
+        if ($this->registration) {
             $panel->registration(RegisterAccountWithoutOTP::class);
         }
 
-        if($this->useOTPActivation){
+        if ($this->useOTPActivation) {
             $panel->registration(RegisterAccount::class);
         }
 
-        if($this->showContactUsButton){
+        if ($this->showContactUsButton) {
             FilamentView::registerRenderHook(
                 PanelsRenderHook::FOOTER,
-                fn (): string => Blade::render('@livewire(\'tomato-contact-us-form\')')
+                fn(): string => Blade::render('@livewire(\'tomato-contact-us-form\')')
             );
         }
 
         $panel->tenantMenuItems($menuItems)
             ->authGuard($this->authGuard)
             ->pages($pages);
-
     }
 
     public ?string $authGuard = 'accounts';
@@ -131,9 +126,9 @@ class FilamentAccountsSaaSPlugin implements Plugin
     public bool $editProfile = false;
     public bool $editPassword = false;
     public bool $deleteAccount = false;
-    public bool $browserSesstionManager = false;
+    public bool $browserSessionManager = false;
     public bool $registration = false;
-    public bool $useJetstreamTeamModel = false;
+    public bool $useJetStreamTeamModel = false;
     public bool $teamInvitation = false;
     public bool $deleteTeam = false;
     public bool $allowTenants = false;
@@ -213,9 +208,9 @@ class FilamentAccountsSaaSPlugin implements Plugin
         return $this;
     }
 
-    public function useJetstreamTeamModel(bool $useJetstreamTeamModel = true): static
+    public function useJetStreamTeamModel(bool $useJetStreamTeamModel = true): static
     {
-        $this->useJetstreamTeamModel = $useJetstreamTeamModel;
+        $this->useJetStreamTeamModel = $useJetStreamTeamModel;
         return $this;
     }
 
@@ -262,9 +257,9 @@ class FilamentAccountsSaaSPlugin implements Plugin
         return $this;
     }
 
-    public function browserSesstionManager(bool $browserSesstionManager = true): static
+    public function browserSessionManager(bool $browserSessionManager = true): static
     {
-        $this->browserSesstionManager = $browserSesstionManager;
+        $this->browserSessionManager = $browserSessionManager;
         return $this;
     }
 
@@ -274,10 +269,7 @@ class FilamentAccountsSaaSPlugin implements Plugin
         return $this;
     }
 
-    public function boot(Panel $panel): void
-    {
-
-    }
+    public function boot(Panel $panel): void {}
 
     public static function make(): static
     {

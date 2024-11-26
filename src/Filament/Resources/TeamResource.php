@@ -4,23 +4,23 @@ namespace TomatoPHP\FilamentAccounts\Filament\Resources;
 
 use TomatoPHP\FilamentAccounts\Components\AccountColumn;
 use TomatoPHP\FilamentAccounts\Filament\Resources\TeamResource\Pages;
-use TomatoPHP\FilamentAccounts\Filament\Resources\TeamResource\RelationManagers;
-use TomatoPHP\FilamentAccounts\Models\Team;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use TomatoPHP\FilamentAccounts\Services\Helpers;
 
 class TeamResource extends Resource
 {
-    protected static ?string $model = Team::class;
-
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
+
+    public static function getModel(): string
+    {
+        return Helpers::loadTeamModelClass();
+    }
 
     public static function getLabel(): ?string
     {
@@ -72,13 +72,12 @@ class TeamResource extends Resource
     {
         $columns = [];
 
-        if(filament('filament-accounts')->useAvatar()){
-            $columns[]= AccountColumn::make('owner.id')
+        if (filament('filament-accounts')->useAvatar()) {
+            $columns[] = AccountColumn::make('owner.id')
                 ->label(trans('filament-accounts::messages.team.columns.owner'))
                 ->sortable();
-        }
-        else {
-            $columns[]= Tables\Columns\TextColumn::make('owner.name')
+        } else {
+            $columns[] = Tables\Columns\TextColumn::make('owner.name')
                 ->label(trans('filament-accounts::messages.team.columns.owner'))
                 ->sortable();
         }
@@ -106,7 +105,7 @@ class TeamResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ], $columns))
             ->filters([
-               Tables\Filters\SelectFilter::make('owner')
+                Tables\Filters\SelectFilter::make('owner')
                     ->label(trans('filament-accounts::messages.team.columns.owner'))
                     ->searchable()
                     ->relationship('owner', 'name')
