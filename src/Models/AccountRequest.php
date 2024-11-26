@@ -35,7 +35,7 @@ class AccountRequest extends Model
      */
     public function accountRequestMeta()
     {
-        return $this->hasMany(Helpers::loadAccountRequestModelClass());
+        return $this->hasMany(Helpers::loadAccountRequestMetaModelClass());
     }
 
     /**

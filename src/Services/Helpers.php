@@ -140,4 +140,10 @@ class Helpers
         $class = config('filament-accounts.meta.contact') ??  \TomatoPHP\FilamentAccounts\Models\ContactsMeta::class;
         return $class;
     }
+
+    public static function loadAccountRequestMetaModelClass()
+    {
+        $class = config('filament-accounts.meta.requests') ??  \TomatoPHP\FilamentAccounts\Models\AccountRequestMeta::class;
+        return $class;
+    }
 }

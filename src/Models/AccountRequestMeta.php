@@ -45,7 +45,7 @@ class AccountRequestMeta extends Model implements HasMedia
      */
     public function accountRequest()
     {
-        return $this->belongsTo(Helpers::loadAccountModelClass());
+        return $this->belongsTo(Helpers::loadAccountRequestModelClass());
     }
 
     /**

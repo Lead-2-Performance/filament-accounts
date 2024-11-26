@@ -110,6 +110,7 @@ return [
     "meta" => [
         "model" => \TomatoPHP\FilamentAccounts\Models\AccountsMeta::class,
         "contact" => \TomatoPHP\FilamentAccounts\Models\ContactsMeta::class,
+        "requests" => \TomatoPHP\FilamentAccounts\Models\AccountRequestMeta::class,
         "resource" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\RelationManagers\AccountMetaManager::class,
     ],
 
