@@ -126,7 +126,7 @@ class FilamentAccountsSaaSPlugin implements Plugin
     public bool $editProfile = false;
     public bool $editPassword = false;
     public bool $deleteAccount = false;
-    public bool $browserSessionManager = false;
+    public bool $sessionManager = false;
     public bool $registration = false;
     public bool $useJetStreamTeamModel = false;
     public bool $teamInvitation = false;
@@ -257,9 +257,9 @@ class FilamentAccountsSaaSPlugin implements Plugin
         return $this;
     }
 
-    public function browserSessionManager(bool $browserSessionManager = true): static
+    public function browserSessionManager(bool $sessionManager = true): static
     {
-        $this->browserSessionManager = $browserSessionManager;
+        $this->sessionManager = $sessionManager;
         return $this;
     }
 

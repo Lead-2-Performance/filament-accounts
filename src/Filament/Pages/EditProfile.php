@@ -83,6 +83,7 @@ class EditProfile extends Page implements HasForms
 
         $this->editProfileForm->fill($data);
         $this->editPasswordForm->fill();
+        $this->browserSessionsForm->fill();
     }
 
     public function getUser()

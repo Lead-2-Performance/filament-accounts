@@ -103,7 +103,7 @@ return [
 
     "contact" => [
         "model" => \TomatoPHP\FilamentAccounts\Models\Contact::class,
-        "status" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource\Pages\AccountTypes::class,
+        "status" => \TomatoPHP\FilamentAccounts\Filament\Resources\ContactResource\Pages\ContactStatusTypes::class,
         "resource" => \TomatoPHP\FilamentAccounts\Filament\Resources\ContactResource::class,
     ],
 

@@ -87,7 +87,7 @@ class BrowserSessionsForm
     {
         return tap(
             value: new Agent(),
-            callback: fn ($agent) => $agent->setUserAgent(userAgent: $session->user_agent)
+            callback: fn($agent) => $agent->setUserAgent(userAgent: $session->user_agent)
         );
     }
 

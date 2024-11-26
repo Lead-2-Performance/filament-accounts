@@ -13,7 +13,7 @@
         </x-filament-panels::form>
     @endif
 
-    @if (filament()->getPlugin('filament-saas-accounts')->browserSessionsForm)
+    @if (filament()->getPlugin('filament-saas-accounts')->sessionManager)
         <x-filament-panels::form>
             {{ $this->browserSessionsForm }}
         </x-filament-panels::form>
