@@ -50,15 +50,15 @@ class FilamentAccountsPlugin implements Plugin
             ];
 
             if ($this->useRequests) {
-                $resources[] = Helpers::loadAccountRequestResourceClass()::class;
+                $resources[] = Helpers::loadAccountRequestResourceClass();
             }
 
             if ($this->useContactUs) {
-                $resources[] = Helpers::loadContactResourceClass()::class;
+                $resources[] = Helpers::loadContactResourceClass();
             }
 
             if ($this->useTeams) {
-                $resources[] = Helpers::loadTeamResourceClass()::class;
+                $resources[] = Helpers::loadTeamResourceClass();
             }
 
             if ($this->useTypes) {
