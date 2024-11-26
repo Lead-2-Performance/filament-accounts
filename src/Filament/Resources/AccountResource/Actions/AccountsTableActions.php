@@ -21,22 +21,22 @@ class AccountsTableActions extends ActionsBuilder
         $actions = collect([]);
 
         //Impersonate
-        if(class_exists(\STS\FilamentImpersonate\Tables\Actions\Impersonate::class) && filament('filament-accounts')->canLogin && filament('filament-accounts')->useImpersonate){
-           $actions->push(AccountImpersonateAction::make());
+        if (class_exists(\STS\FilamentImpersonate\Tables\Actions\Impersonate::class) && filament('filament-accounts')->canLogin && filament('filament-accounts')->useImpersonate) {
+            $actions->push(AccountImpersonateAction::make());
         }
 
         //Change Password
-        if(filament('filament-accounts')->canLogin) {
+        if (filament('filament-accounts')->canLogin) {
             $actions->push(ChangePasswordAction::make());
         }
 
         //Teams
-        if(filament('filament-accounts')->useTeams) {
+        if (filament('filament-accounts')->useTeams) {
             $actions->push(AccountTeamsAction::make());
         }
 
         //Notifications
-        if(filament('filament-accounts')->useNotifications){
+        if (filament('filament-accounts')->useNotifications) {
             $actions->push(AccountNotificationsAction::make());
         }
 
@@ -58,7 +58,7 @@ class AccountsTableActions extends ActionsBuilder
         ]);
 
         //Merge Provider Actions
-        $actions = $actions->merge(FilamentAccounts::loadActions());
+        $actions = $actions->merge(FilamentAccounts::make()->loadActions());
 
         return $actions->toArray();
     }

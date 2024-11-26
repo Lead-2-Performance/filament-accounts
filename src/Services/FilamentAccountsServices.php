@@ -2,8 +2,7 @@
 
 namespace TomatoPHP\FilamentAccounts\Services;
 
-use Illuminate\Support\Facades\Config;
-use TomatoPHP\FilamentAccounts\Models\Account;
+
 
 class FilamentAccountsServices
 {
@@ -96,8 +95,7 @@ class FilamentAccountsServices
      */
     public function create(
         ?string $form = null
-    ): static
-    {
+    ): static {
         $this->create_form = $form;
         return $this;
     }
@@ -108,8 +106,7 @@ class FilamentAccountsServices
      */
     public function edit(
         ?string $form = null
-    ): static
-    {
+    ): static {
         $this->edit_form = $form;
         return $this;
     }
@@ -120,8 +117,7 @@ class FilamentAccountsServices
      */
     public function show(
         array $show = []
-    ): static
-    {
+    ): static {
         $this->show = $show;
         return $this;
     }
@@ -134,8 +130,7 @@ class FilamentAccountsServices
     public function table(
         array $cols = [],
         ?string $view = null
-    ): static
-    {
+    ): static {
         $this->table_cols = $cols;
         $this->table_cells = $view;
         return $this;
@@ -151,8 +146,7 @@ class FilamentAccountsServices
         array $edit = [],
         array $api_create = [],
         array $api_edit = [],
-    ): static
-    {
+    ): static {
         $this->validation_create = $create;
         $this->validation_edit = $edit;
         $this->api_validation_create = $edit;
@@ -166,8 +160,7 @@ class FilamentAccountsServices
      */
     public function filters(
         array $filters = []
-    ): static
-    {
+    ): static {
         $this->filters = $filters;
         return $this;
     }
@@ -178,9 +171,8 @@ class FilamentAccountsServices
      */
     public function media(
         array $media = []
-    ): static
-    {
-        if(count($media)){
+    ): static {
+        if (count($media)) {
             $this->has_media = true;
             $this->media = $media;
         }
@@ -190,60 +182,59 @@ class FilamentAccountsServices
     public function attach(
         string $key,
         string $label,
-        string $type='text',
-        string|array|null $create_validation=null,
-        string|array|null $update_validation=null,
-        string|array|null $api_create_validation=null,
-        string|array|null $api_update_validation=null,
+        string $type = 'text',
+        string|array|null $create_validation = null,
+        string|array|null $update_validation = null,
+        string|array|null $api_create_validation = null,
+        string|array|null $api_update_validation = null,
         bool $show_on_view = true,
         bool $show_on_create = true,
         bool $show_on_edit = true,
         bool $show_on_table = false,
         bool $allow_filter = false,
 
-    ): static
-    {
+    ): static {
         $this->attached_items[$key] = $type;
 
-        if($create_validation){
+        if ($create_validation) {
             $this->validation_create[$key] = $create_validation;
         }
-        if($update_validation){
+        if ($update_validation) {
             $this->validation_edit[$key] = $update_validation;
         }
 
-        if($api_create_validation){
+        if ($api_create_validation) {
             $this->api_validation_create[$key] = $api_create_validation;
         }
-        if($update_validation){
+        if ($update_validation) {
             $this->api_validation_edit[$key] = $api_update_validation;
         }
 
-        if($show_on_view){
+        if ($show_on_view) {
             $this->show[$key] = [
                 'label' => $label,
                 'type' => $type
             ];
         }
-        if($show_on_table){
+        if ($show_on_table) {
             $this->table_cols[$key] = $label;
         }
-        if($allow_filter){
+        if ($allow_filter) {
             $this->filters[$key] = $key;
         }
-        if($show_on_create){
+        if ($show_on_create) {
             $this->createInputs[$key] = [
                 'label' => $label,
                 'type' => $type,
             ];
         }
-        if($show_on_edit){
+        if ($show_on_edit) {
             $this->editInputs[$key] = [
                 'label' => $label,
                 'type' => $type,
             ];
         }
-        if($type === 'media'){
+        if ($type === 'media') {
             $this->has_media = true;
             $this->media[$key] = false;
         }
@@ -332,25 +323,24 @@ class FilamentAccountsServices
 
     public function registerAccountRelation(array $relation): void
     {
-        foreach ($relation as $item){
+        foreach ($relation as $item) {
             $this->relations[] = $item;
         }
-
     }
 
-    public function loadRelations():array
+    public function loadRelations(): array
     {
         return $this->relations;
     }
 
     public function registerAccountActions(array $action): void
     {
-        foreach ($action as $item){
+        foreach ($action as $item) {
             $this->actions[] = $item;
         }
     }
 
-    public function loadActions():array
+    public function loadActions(): array
     {
         return $this->actions;
     }
