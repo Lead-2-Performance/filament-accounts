@@ -161,7 +161,7 @@ class Account extends Authenticatable implements HasMedia, HasAvatar
      */
     public function locations(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
-        return $this->morphMany(Location::class, 'modelbale', 'model_type', 'model_id');
+        return $this->morphMany(Location::class, 'modal', 'model_type', 'model_id');
     }
 
     /**

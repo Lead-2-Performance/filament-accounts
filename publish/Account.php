@@ -13,6 +13,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use TomatoPHP\FilamentAccounts\Models\AccountsMeta;
 use TomatoPHP\FilamentAccounts\Services\Helpers;
 use TomatoPHP\FilamentLocations\Models\Location;
 
@@ -127,7 +128,7 @@ class Account extends Authenticatable implements HasMedia, HasAvatar
      */
     public function accountsMeta(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany('');
+        return $this->hasMany(Helpers::loadAccountMetaModelClass(), 'account_id', 'id');
     }
 
 

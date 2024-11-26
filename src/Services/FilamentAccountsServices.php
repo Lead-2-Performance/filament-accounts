@@ -86,8 +86,10 @@ class FilamentAccountsServices
 
     public array $relations = [];
 
-
-
+    public static function make(): static
+    {
+        return new static();
+    }
 
     /**
      * @param string|null $form

@@ -30,7 +30,7 @@ return [
      *
      * resource: User Resource Class
      */
-    "resource" => TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource::class,
+    "resource" => \TomatoPHP\FilamentAccounts\Filament\Resources\AccountResource::class,
 
     /*
      * Accounts Configurations
